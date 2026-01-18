@@ -1,0 +1,14 @@
+# Node
+node_modules/
+deploy/frontend/node_modules/
+deploy/backend/node_modules/
+npm-debug.log*
+yarn-error.log*
+
+dist/
+.vite/
+git
+.env
+.env.*
+
+
