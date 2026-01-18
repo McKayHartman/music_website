@@ -5,6 +5,9 @@
 // Backend is running on the specified .env PORT or 3000
 
 import express from "express";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 
