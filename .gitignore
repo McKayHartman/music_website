@@ -11,5 +11,6 @@ git
 .env
 .env.*
 **/.env
-
+deploy/backend/.env
+deploy/frontend/.env
 
