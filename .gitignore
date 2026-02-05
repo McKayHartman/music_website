@@ -8,9 +8,9 @@ yarn-error.log*
 dist/
 .vite/
 git
+# Environment variables (anywhere)
 .env
 .env.*
 **/.env
-deploy/backend/.env
-deploy/frontend/.env
+**/.env.*
 
