@@ -1,13 +1,42 @@
-// navbar component
-import { Link } from 'react-router-dom';
+import "../styles/NavbarStyles.css";
 
-const Navbar = () => {
+import { NavLink } from "react-router-dom";
+
+
+export default function Navbar() {
   return (
-	<nav className="fixed top-0 left-0 w-full p-4 z-50 bg-gray-500 p-4 flex space-x-4 ">
-      <Link to="/">Home</Link>
-      <Link to="/about">About</Link>
-  </nav>
-  );
-};
+    <nav className="navbar">
+      <div className="navbar__brand">
+        <NavLink to="/" className="navbar__logo">
+          Annie Hartman Music
+        </NavLink>
+      </div>
 
-export default Navbar;
+      <ul className="navbar__links">
+        <li>
+          <NavLink to="/" end className="navbar__link">
+            Home
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink to="/music" className="navbar__link">
+            Music
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink to="/about" className="navbar__link">
+            About
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink to="/admin" className="navbar__link navbar__admin">
+            Admin
+          </NavLink>
+        </li>
+      </ul>
+    </nav>
+  );
+}

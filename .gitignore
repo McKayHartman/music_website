@@ -14,3 +14,12 @@ git
 **/.env
 **/.env.*
 
+.pdf
+.pdf.*
+**/.pdf
+**/.pdf.*
+
+.mp3
+.mp3*
+**/.mp3
+**/.mp3.*

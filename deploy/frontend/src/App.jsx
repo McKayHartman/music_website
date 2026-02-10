@@ -13,6 +13,7 @@ import MyAccount from '../pages/MyAccount.jsx'
 import Footer from '../components/Footer.jsx'
 import AdminDashboard from '../pages/AdminDashboard.jsx'
 import UploadPage from '../pages/UploadPage.jsx'
+import Browse from '../pages/Browse.jsx'
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/upload" element={<UploadPage />} />
           <Route path='admin' element={<AdminDashboard />} />
+          <Route path='/music' element={<Browse />} />
         </Routes>
       </main>
       <Footer />

@@ -4,6 +4,9 @@ import PreviewCard from "../components/PreviewCard.jsx";
 import axios from "axios";
 
 
+
+
+
 function UploadPage() {
 
 	// Text inputs

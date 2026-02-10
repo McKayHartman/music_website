@@ -1,0 +1,34 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  border: none;
+  border-radius: 9999px;
+
+  background-color: #0f172a;
+  color: white;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#delete:hover {
+  background-color: #ef4444;
+}
+
+#edit:hover {
+  background-color: #3b82f6;
+}
+
+#upload:hover {
+  background-color: #374151;
+}
+
+#upload {
+	margin-bottom: 1rem;
+}

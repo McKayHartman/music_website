@@ -1,7 +1,23 @@
 import PreviewCard from '../components/PreviewCard.jsx';
-import SearchBar
- from '../components/SearchBar.jsx';
+import SearchBar from '../components/SearchBar.jsx';
+
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+
+
+
 function Home(){
+
+	// API call to get music
+	async function fetchMusic() {
+		try {
+			response = await axios.get(`/api/music-limited`);
+			return response;
+		} catch(error) {
+			console.error(error)
+		}
+	}
+
 	return (
 		<div className='relative min-h-screen'>
 			{/* Background image */}
@@ -14,12 +30,11 @@ function Home(){
 				<SearchBar/>
 			</div>
 
-			<PreviewCard />
-			<PreviewCard />
-			<PreviewCard />
-			<PreviewCard />
-			<PreviewCard />
-			<PreviewCard />
+			<div>
+
+			</div>
+
+			
 		</div>
 		
 	)
