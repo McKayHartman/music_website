@@ -11,6 +11,7 @@ import musicPostRoutes from './routes/musicPostRoutes.js';
 import getMusicRoutes from './routes/getMusicRoutes.js';
 import getMusicLimitedRoutes from './routes/getMusicLimitedRoutes.js';
 import deletionRoutes from './routes/deletionRoutes.js';
+import path from 'path';
 
 
 dotenv.config();
@@ -18,6 +19,8 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+
+app.use('/uploads', express.static(path.resolve('uploads')));
 
 const PORT = process.env.PORT || 3000;
 

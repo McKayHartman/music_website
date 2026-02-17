@@ -19,6 +19,9 @@ const pdfDir = path.join(uploadDir, 'pdf');
 const mp3Dir = path.join(uploadDir, 'mp3');
 const thumbnailDir = path.join(uploadDir, 'thumbnails');
 
+const PUBLIC_UPLOADS = 'uploads';
+
+
 for (const dir of [uploadDir, pdfDir, mp3Dir, thumbnailDir]) {
 	await fs.mkdir(dir, { recursive: true });
 }
@@ -71,7 +74,11 @@ async function createPdfThumbnail(pdfPath) {
 
 	await fs.unlink(generatedImage);
 
-	return finalImagePath;
+	return path.join(
+		PUBLIC_UPLOADS,
+		'thumbnails',
+		path.basename(finalImagePath)
+	);
 }
 
 
@@ -115,8 +122,17 @@ router.post(
 	async (req, res) => {
 		const { title, composer, arranger, price } = req.body;
 
-		const pdfFilePath = req.files?.pdf?.[0]?.path ?? null;
-		const mp3FilePath = req.files?.mp3?.[0]?.path ?? null;
+		const pdfFile = req.files?.pdf?.[0] ?? null;
+		const mp3File = req.files?.mp3?.[0] ?? null;
+
+		const pdfFilePath = pdfFile
+			? path.join(PUBLIC_UPLOADS, 'pdf', path.basename(pdfFile.path))
+			: null;
+
+		const mp3FilePath = mp3File
+			? path.join(PUBLIC_UPLOADS, 'mp3', path.basename(mp3File.path))
+			: null;
+
 
 		if (!title || !composer || !pdfFilePath) {
 			return res.status(400).json({

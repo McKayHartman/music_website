@@ -33,7 +33,7 @@ export default function Browse() {
 				});
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen">
+		<div className="flex flex-col min-h-screen">
 			{ cardsArray ? cardsArray : <p className="text-gray-500">No products available</p> }
 
 		</div>
