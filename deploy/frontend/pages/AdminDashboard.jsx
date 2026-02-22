@@ -1,7 +1,9 @@
 import axios from 'axios';
 import MiniCard from '../components/MiniCard.jsx';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import "../styles/ButtonStyles.css"
+import { getAuthHeaders } from '../utils/auth.js';
 
 export default function AdminDashboard() {
   const [musicPosts, setMusicPosts] = useState([]);
@@ -10,7 +12,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const getAllMusicPosts = async () => {
       try {
-        const response = await axios.get('/api/music');
+        const response = await axios.get('/api/music', { headers: getAuthHeaders() });
         console.log('Music Posts:', response.data);
         setMusicPosts(response.data);
       } catch (error) {
@@ -38,7 +40,7 @@ export default function AdminDashboard() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
         </svg>
 
-        <a href="/upload">Upload New Music</a>
+        <Link to="/upload">Upload New Music</Link>
       </button>
       
 

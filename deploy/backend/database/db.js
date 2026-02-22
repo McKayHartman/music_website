@@ -15,3 +15,6 @@ export const pool = new Pool({
 pool.connect()
   .then(() => console.log('Connected to PostgreSQL database'))
   .catch((err) => console.error('Error connecting to PostgreSQL database:', err));
+
+const result = await pool.query('SELECT current_user, current_database();');
+console.log(result.rows);

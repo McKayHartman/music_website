@@ -1,11 +1,12 @@
 import express from 'express';
 import { pool } from '../database/db.js';
 import fs from 'fs/promises';
+import requireAdmin from '../middleware/requireAdmin.js';
 
 const router = express.Router();
 
 // DELETE /api/music/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
 	const { id } = req.params;
 
 	try {

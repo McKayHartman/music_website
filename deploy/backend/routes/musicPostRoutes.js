@@ -6,6 +6,7 @@ import fs from 'fs/promises';
 import sharp from 'sharp';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import requireAdmin from '../middleware/requireAdmin.js';
 
 const execFileAsync = promisify(execFile);
 const router = express.Router();
@@ -49,16 +50,19 @@ async function createPdfThumbnail(pdfPath) {
 	const { width, height } = await sharp(generatedImage).metadata();
 
 	//SVG watermark (same size as image)
+	// Use semi-transparent neutral color and scale font to better fit small thumbnails
+	const computedFontSize = Math.max(18, Math.floor(Math.min(width, height) * 0.28));
 	const svgWatermark = `
-	<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+	<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
 		<g transform="translate(${width / 2}, ${height / 2}) rotate(-45)">
 			<text
 				text-anchor="middle"
 				dominant-baseline="middle"
-				fill="rgba(255, 0, 0, 0.35)"
-				font-size="${Math.min(width, height) / 3 - 50}"
-				font-weight="900"
+				fill="rgba(0, 0, 0, 0.5)"
+				font-size="${computedFontSize}"
+				font-weight="700"
 				font-family="Arial, sans-serif"
+				style="letter-spacing: 2px"
 			>
 				SAMPLE
 			</text>
@@ -115,6 +119,7 @@ const upload = multer({
 
 router.post(
 	'/',
+	requireAdmin,
 	upload.fields([
 		{ name: 'pdf', maxCount: 1 },
 		{ name: 'mp3', maxCount: 1 }

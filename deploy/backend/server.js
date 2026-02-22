@@ -11,6 +11,7 @@ import musicPostRoutes from './routes/musicPostRoutes.js';
 import getMusicRoutes from './routes/getMusicRoutes.js';
 import getMusicLimitedRoutes from './routes/getMusicLimitedRoutes.js';
 import deletionRoutes from './routes/deletionRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import path from 'path';
 
 
@@ -29,6 +30,7 @@ app.get('/ping', (req, res) => {
 });
 
 app.use('/test', testroutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/music-posts', musicPostRoutes);
 app.use('/api/music', getMusicRoutes);
 app.use('/api/music-limited', getMusicLimitedRoutes)
@@ -37,3 +39,4 @@ app.use('/api/music', deletionRoutes);
 app.listen(PORT, () => {
 	console.log(`backend running on port ${PORT}`);
 });
+

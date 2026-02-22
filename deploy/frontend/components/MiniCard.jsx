@@ -1,5 +1,6 @@
 import axios from 'axios';
 import "../styles/ButtonStyles.css"
+import { getAuthHeaders } from '../utils/auth.js';
 
 export default function MiniCard({ post}) {
 
@@ -10,7 +11,7 @@ export default function MiniCard({ post}) {
 	async function handleDelete() {
 		try {
 			console.log("sending delete request")
-			await axios.delete(`/api/music/${post.id}`);
+			await axios.delete(`/api/music/${post.id}`, { headers: getAuthHeaders() });
 			window.location.reload(); // Reload the page to reflect changes
 			console.log('Music post deleted successfully');
 		} catch (error) {
@@ -26,7 +27,7 @@ export default function MiniCard({ post}) {
 				composer: post.composer,
 				arranger: post.arranger,
 				price: post.price
-			});
+			}, { headers: getAuthHeaders() });
 			window.location.reload(); // Reload the page to reflect changes
 			console.log('Music post edited successfully');
 		} catch (error) {
@@ -72,4 +73,3 @@ export default function MiniCard({ post}) {
 
 	);
 }
-

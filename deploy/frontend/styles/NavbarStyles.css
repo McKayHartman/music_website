@@ -2,6 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
 
   padding: 0.75rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
@@ -50,4 +52,85 @@
 /* Admin emphasis */
 .navbar__admin.active {
   background-color: #7c2d12;
+}
+
+.navbar__actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.navbar__account {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.navbar__account:hover {
+  background-color: #eef2ff;
+  border-color: #818cf8;
+}
+
+.navbar__account.active {
+  background-color: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+}
+
+.navbar__account--primary {
+  background-color: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+}
+
+.navbar__account--primary:hover {
+  background-color: #1e293b;
+  border-color: #1e293b;
+}
+
+.navbar__logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #fecaca;
+  border-radius: 9999px;
+  background-color: #fff1f2;
+  color: #9f1239;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.navbar__logout:hover {
+  background-color: #ffe4e6;
+  border-color: #fda4af;
+  color: #881337;
+}
+
+.navbar__account-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: #dbeafe;
+  color: #1e3a8a;
+}
+
+.navbar__account.active .navbar__account-icon {
+  background-color: #334155;
+  color: #ffffff;
 }

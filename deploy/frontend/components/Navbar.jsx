@@ -1,9 +1,36 @@
-import "../styles/NavbarStyles.css";
+import '../styles/NavbarStyles.css';
 
-import { NavLink } from "react-router-dom";
-
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { clearAuthToken, isAdmin, isAuthenticated } from '../utils/auth.js';
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  const [authenticated, setAuthenticated] = useState(isAuthenticated());
+  const [admin, setAdmin] = useState(isAdmin());
+
+  useEffect(() => {
+    function syncAuthState() {
+      setAuthenticated(isAuthenticated());
+      setAdmin(isAdmin());
+    }
+
+    window.addEventListener('auth-changed', syncAuthState);
+    window.addEventListener('storage', syncAuthState);
+
+    return () => {
+      window.removeEventListener('auth-changed', syncAuthState);
+      window.removeEventListener('storage', syncAuthState);
+    };
+  }, []);
+
+  function handleLogout() {
+    clearAuthToken();
+    setAuthenticated(false);
+    setAdmin(false);
+    navigate('/login');
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar__brand">
@@ -31,12 +58,37 @@ export default function Navbar() {
           </NavLink>
         </li>
 
-        <li>
-          <NavLink to="/admin" className="navbar__link navbar__admin">
-            Admin
-          </NavLink>
-        </li>
+        {admin && (
+          <li>
+            <NavLink to="/admin" className="navbar__link navbar__admin">
+              Admin
+            </NavLink>
+          </li>
+        )}
       </ul>
+
+      <div className="navbar__actions">
+        {authenticated ? (
+          <>
+            <NavLink to="/my-account" className="navbar__account">
+              <span>My Account</span>
+            </NavLink>
+            <button type="button" className="navbar__logout" onClick={handleLogout}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login" className="navbar__account">
+              <span>Login</span>
+            </NavLink>
+
+            <NavLink to="/create-account" className="navbar__account navbar__account--primary">
+              <span>Create Account</span>
+            </NavLink>
+          </>
+        )}
+      </div>
     </nav>
   );
 }

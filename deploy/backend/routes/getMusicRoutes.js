@@ -2,10 +2,11 @@
 
 import express from 'express';
 import { pool } from '../database/db.js';
+import requireAdmin from '../middleware/requireAdmin.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', requireAdmin, async (req, res) => {
 	try {
 		const musicPosts = await pool.query(
 			`SELECT p.id, p.title, p.composer, p.arranger, p.price,

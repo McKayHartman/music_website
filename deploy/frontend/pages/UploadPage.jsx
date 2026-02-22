@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import PreviewCard from "../components/PreviewCard.jsx";
 import axios from "axios";
+import { getAuthHeaders } from "../utils/auth.js";
 
 
 
@@ -47,7 +48,8 @@ function UploadPage() {
 
 		const response =  await axios.post('/api/music-posts', formData, {
 			headers: {
-				'Content-Type': 'multipart/form-data'
+				'Content-Type': 'multipart/form-data',
+				...getAuthHeaders()
 			}
 		});
 
