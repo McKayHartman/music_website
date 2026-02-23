@@ -12,13 +12,17 @@ import getMusicRoutes from './routes/getMusicRoutes.js';
 import getMusicLimitedRoutes from './routes/getMusicLimitedRoutes.js';
 import deletionRoutes from './routes/deletionRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import checkoutRoutes from './routes/checkoutRoutes.js';
+import stripeWebhookRoutes from './routes/stripeWebhookRoutes.js';
+import purchaseRoutes from './routes/purchaseRoutes.js';
 import path from 'path';
 
 
-dotenv.config();
+dotenv.config({ path: new URL('./.env', import.meta.url).pathname });
 
 const app = express();
 
+app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeWebhookRoutes);
 app.use(express.json());
 
 app.use('/uploads', express.static(path.resolve('uploads')));
@@ -35,8 +39,9 @@ app.use('/api/music-posts', musicPostRoutes);
 app.use('/api/music', getMusicRoutes);
 app.use('/api/music-limited', getMusicLimitedRoutes)
 app.use('/api/music', deletionRoutes);
+app.use('/api/checkout', checkoutRoutes);
+app.use('/api/purchases', purchaseRoutes);
 
 app.listen(PORT, () => {
 	console.log(`backend running on port ${PORT}`);
 });
-

@@ -1,14 +1,87 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { getAuthHeaders, getAuthToken } from '../utils/auth.js';
 
 export default function MusicDetail() {
   const { id } = useParams();
   const [music, setMusic] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [alreadyPurchased, setAlreadyPurchased] = useState(false);
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const audioRef = useRef(null);
+
+  function handleAddToCart() {
+    if (alreadyPurchased) {
+      alert('You already purchased this item.');
+      return;
+    }
+
+    // Get current cart from localStorage
+    const currentCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    // Check if item is already in cart
+    const existingItem = currentCart.find(item => item.id === music.id);
+    
+    if (existingItem) {
+      alert('This item is already in your cart!');
+      return;
+    }
+    
+    // Add item to cart
+    const cartItem = {
+      id: music.id,
+      title: music.title,
+      composer: music.composer,
+      arranger: music.arranger,
+      price: Number(music.price),
+      thumbnail_path: music.thumbnail_path
+    };
+    
+    currentCart.push(cartItem);
+    
+    // Save back to localStorage
+    localStorage.setItem('cart', JSON.stringify(currentCart));
+    
+    alert('Added to cart successfully!');
+  }
+
+  async function handleListenToMp3() {
+    if (!music?.mp3_path) {
+      alert('No MP3 is available for this piece.');
+      return;
+    }
+
+    if (!audioRef.current) {
+      const audioUrl = `http://localhost:3000/${music.mp3_path}`;
+      const audio = new Audio(audioUrl);
+      audio.addEventListener('ended', () => setIsPlayingPreview(false));
+      audioRef.current = audio;
+    }
+
+    try {
+      if (isPlayingPreview) {
+        audioRef.current.pause();
+        setIsPlayingPreview(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlayingPreview(true);
+      }
+    } catch (playbackError) {
+      console.error('Error playing MP3 preview:', playbackError);
+      alert('Unable to play this MP3 right now.');
+      setIsPlayingPreview(false);
+    }
+  }
 
   useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setIsPlayingPreview(false);
+    }
+
     const fetchMusicDetail = async () => {
       try {
         const response = await axios.get(`/api/music-limited/${id}`);
@@ -25,10 +98,37 @@ export default function MusicDetail() {
       }
     };
 
+    const checkPurchasedStatus = async () => {
+      if (!getAuthToken()) {
+        setAlreadyPurchased(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get('/api/purchases', { headers: getAuthHeaders() });
+        const isPurchased = response.data.some(
+          (purchase) => Number(purchase.product_id) === Number(id)
+        );
+        setAlreadyPurchased(isPurchased);
+      } catch (err) {
+        console.error('Error checking purchase status:', err);
+      }
+    };
+
     if (id) {
       fetchMusicDetail();
+      checkPurchasedStatus();
     }
   }, [id]);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -54,7 +154,7 @@ export default function MusicDetail() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white shadow-lg overflow-hidden">
           {/* Header with image and basic info */}
           <div className="md:flex">
             <div className="md:w-1/3">
@@ -73,20 +173,25 @@ export default function MusicDetail() {
               {music.arranger && (
                 <p className="text-lg text-gray-500 mb-4">arranged by {music.arranger}</p>
               )}
-              <div className="text-2xl font-semibold text-green-600 mb-6">
+              <div className="text-2xl font-semibold text-text-price mb-6">
                 ${music.price}
               </div>
 
               {/* Action buttons */}
               <div className="flex gap-4">
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                  Preview PDF
+                <button
+                  onClick={handleListenToMp3}
+                  disabled={!music?.mp3_path}
+                  className="bg-slate-800 text-white px-6 py-2 rounded hover:bg-slate-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isPlayingPreview ? 'Pause MP3' : 'Listen to MP3'}
                 </button>
-                <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                  Listen to MP3
-                </button>
-                <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                  Purchase
+                <button
+                  onClick={handleAddToCart}
+                  disabled={alreadyPurchased}
+                  className="bg-slate-800 text-white px-6 py-2 rounded hover:bg-slate-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {alreadyPurchased ? 'Already Purchased' : 'Add to Cart'}
                 </button>
               </div>
             </div>

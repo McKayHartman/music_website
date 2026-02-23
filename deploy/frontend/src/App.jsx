@@ -15,6 +15,8 @@ import AdminDashboard from '../pages/AdminDashboard.jsx'
 import UploadPage from '../pages/UploadPage.jsx'
 import Browse from '../pages/Browse.jsx'
 import MusicDetail from '../pages/MusicDetail.jsx'
+import Cart from '../pages/Cart.jsx'
+import MyPurchases from '../pages/MyPurchases.jsx'
 
 function App() {
 
@@ -46,6 +48,8 @@ function App() {
           />
           <Route path='/music' element={<Browse />} />
           <Route path='/music/:id' element={<MusicDetail />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/my-purchases' element={<MyPurchases />} />
         </Routes>
       </main>
       <Footer />

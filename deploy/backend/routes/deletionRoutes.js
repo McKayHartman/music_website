@@ -5,6 +5,50 @@ import requireAdmin from '../middleware/requireAdmin.js';
 
 const router = express.Router();
 
+// PATCH /api/music/:id
+router.patch('/:id', requireAdmin, async (req, res) => {
+	const { id } = req.params;
+	const { title, composer, arranger, price } = req.body;
+
+	if (!title || !composer || price === undefined || price === null) {
+		return res.status(400).json({
+			error: 'Title, composer, and price are required'
+		});
+	}
+
+	const numericPrice = Number(price);
+	if (Number.isNaN(numericPrice) || numericPrice < 0) {
+		return res.status(400).json({
+			error: 'Price must be a valid non-negative number'
+		});
+	}
+
+	try {
+		const updateResult = await pool.query(
+			`UPDATE products
+			 SET title = $1,
+				 composer = $2,
+				 arranger = $3,
+				 price = $4
+			 WHERE id = $5
+			 RETURNING *`,
+			[title, composer, arranger || null, numericPrice, id]
+		);
+
+		if (updateResult.rowCount === 0) {
+			return res.status(404).json({ error: 'Music post not found' });
+		}
+
+		res.status(200).json({
+			message: 'Music post updated successfully',
+			updatedPost: updateResult.rows[0]
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Failed to update music post' });
+	}
+});
+
 // DELETE /api/music/:id
 router.delete('/:id', requireAdmin, async (req, res) => {
 	const { id } = req.params;

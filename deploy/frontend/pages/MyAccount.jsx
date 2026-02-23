@@ -55,7 +55,7 @@ function MyAccount() {
       <button
         type="button"
         onClick={handleLogout}
-        className="mt-6 bg-slate-900 text-white px-4 py-2 rounded hover:bg-slate-800"
+        className="mt-6 bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700"
       >
         Logout
       </button>

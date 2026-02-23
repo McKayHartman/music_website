@@ -75,7 +75,7 @@ function CreateAccount() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-2 bg-slate-900 text-white px-4 py-2 rounded hover:bg-slate-800 disabled:opacity-70"
+          className="mt-2 bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700 disabled:opacity-70"
         >
           {isSubmitting ? 'Creating...' : 'Create Account'}
         </button>

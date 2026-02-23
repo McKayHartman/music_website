@@ -34,8 +34,7 @@ export function setAuthUser(user) {
 }
 
 export function clearAuthToken() {
-  localStorage.removeItem(AUTH_TOKEN_KEY);
-  localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.clear();
   dispatchAuthChanged();
 }
 

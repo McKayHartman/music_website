@@ -124,7 +124,7 @@ function UploadPage() {
 					className="border border-gray-300 rounded px-3 py-2 w-32 text-center">
 				</input>
 
-				<button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">Upload Music</button>
+				<button type="submit" className="bg-slate-800 text-white px-6 py-2 rounded hover:bg-slate-700">Upload Music</button>
 
 			</form>
 
