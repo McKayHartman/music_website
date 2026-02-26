@@ -25,7 +25,7 @@ const app = express();
 app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeWebhookRoutes);
 app.use(express.json());
 
-app.use('/uploads', express.static(path.resolve('uploads')));
+app.use('/uploads/thumbnails', express.static(path.resolve('uploads/thumbnails')));
 
 const PORT = process.env.PORT || 3000;
 

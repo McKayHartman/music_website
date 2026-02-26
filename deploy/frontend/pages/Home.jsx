@@ -33,7 +33,7 @@ function Home(){
 	return (
 		<div className='relative min-h-screen'>
 			{/* Background image */}
-			<div className="fixed inset-0 -z-10 bg-[url('../assets/score_backsplash.jpg')] bg-cover bg-center bg-no-repeat" />
+			<div className="fixed inset-0 -z-10 bg-[url('../assets/score_backsplash.webp')] bg-cover bg-center bg-no-repeat" />
 
 
 

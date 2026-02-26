@@ -46,12 +46,9 @@ router.get('/:id', async (req, res) => {
 	try {
 		const { id } = req.params;
 		const musicPost = await pool.query(
-			`SELECT 
-				p.*,
-				pf.mp3_path
-			FROM products p
-			LEFT JOIN product_files pf ON pf.product_id = p.id
-			WHERE p.id = $1 AND p.is_active = true`,
+			`SELECT *
+			FROM products
+			WHERE id = $1 AND is_active = true`,
 			[id]
 		);
 

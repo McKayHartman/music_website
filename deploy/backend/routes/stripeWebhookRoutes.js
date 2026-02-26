@@ -1,6 +1,7 @@
 import express from 'express';
 import Stripe from 'stripe';
 import { recordOrderFromCheckoutSession } from '../utils/purchaseStore.js';
+import dotenv from 'dotenv';
 
 const router = express.Router();
 

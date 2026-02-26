@@ -5,7 +5,7 @@ import axios from 'axios'
 
 function PreviewCard({ music }) {
 	
-	const imageUrl = `http://localhost:3000/${music.thumbnail_path}`;
+	const imageUrl = `/${music.thumbnail_path}`;
 
 	const cardClasses = `
 		flex flex-col md:flex-row gap-4

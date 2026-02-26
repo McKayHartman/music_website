@@ -93,7 +93,7 @@ export default function Cart() {
             {cart.map((item) => (
               <div key={item.id} className="p-6 flex items-center">
                 <img
-                  src={`http://localhost:3000/${item.thumbnail_path}`}
+                  src={`/${item.thumbnail_path}`}
                   alt={item.title}
                   className="w-20 h-20 object-cover rounded-lg mr-4"
                   onError={(e) => {

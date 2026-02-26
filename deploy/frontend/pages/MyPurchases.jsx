@@ -175,7 +175,7 @@ export default function MyPurchases() {
               {purchases.map((purchase) => (
                 <div key={purchase.id} className="p-6 flex items-center">
                   <img
-                    src={`http://localhost:3000/${purchase.thumbnail_path}`}
+                    src={`/${purchase.thumbnail_path}`}
                     alt={purchase.title}
                     className="w-20 h-20 object-cover rounded-lg mr-4"
                     onError={(e) => {

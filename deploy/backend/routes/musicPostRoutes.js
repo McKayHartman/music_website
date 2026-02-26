@@ -3,6 +3,7 @@ import { pool } from '../database/db.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
+import crypto from 'crypto';
 import sharp from 'sharp';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
@@ -104,7 +105,8 @@ const storage = multer.diskStorage({
 		}
 	},
 	filename: (req, file, cb) => {
-		cb(null, `${Date.now()}-${file.originalname}`);
+		const extension = file.mimetype === 'application/pdf' ? '.pdf' : '.mp3';
+		cb(null, `${Date.now()}-${crypto.randomUUID()}${extension}`);
 	}
 });
 
@@ -112,6 +114,34 @@ const upload = multer({
 	storage,
 	limits: { fileSize: 25 * 1024 * 1024 }
 });
+
+async function isPdfFile(filePath) {
+	const fileHandle = await fs.open(filePath, 'r');
+	try {
+		const buffer = Buffer.alloc(5);
+		await fileHandle.read(buffer, 0, buffer.length, 0);
+		return buffer.toString('utf8') === '%PDF-';
+	} finally {
+		await fileHandle.close();
+	}
+}
+
+async function isMp3File(filePath) {
+	const fileHandle = await fs.open(filePath, 'r');
+	try {
+		const buffer = Buffer.alloc(10);
+		const { bytesRead } = await fileHandle.read(buffer, 0, buffer.length, 0);
+		if (bytesRead < 3) return false;
+
+		if (buffer.slice(0, 3).toString('utf8') === 'ID3') {
+			return true;
+		}
+
+		return buffer[0] === 0xff && (buffer[1] & 0xe0) === 0xe0;
+	} finally {
+		await fileHandle.close();
+	}
+}
 
 /* =========================
    Route
@@ -129,6 +159,7 @@ router.post(
 
 		const pdfFile = req.files?.pdf?.[0] ?? null;
 		const mp3File = req.files?.mp3?.[0] ?? null;
+		const uploadedFilePaths = [pdfFile?.path, mp3File?.path].filter(Boolean);
 
 		const pdfFilePath = pdfFile
 			? path.join(PUBLIC_UPLOADS, 'pdf', path.basename(pdfFile.path))
@@ -140,9 +171,29 @@ router.post(
 
 
 		if (!title || !composer || !pdfFilePath) {
+			await Promise.all(uploadedFilePaths.map((filePath) => fs.unlink(filePath).catch(() => {})));
 			return res.status(400).json({
 				error: 'Title, composer, and PDF file are required'
 			});
+		}
+
+		try {
+			const pdfValid = await isPdfFile(pdfFile.path);
+			if (!pdfValid) {
+				await Promise.all(uploadedFilePaths.map((filePath) => fs.unlink(filePath).catch(() => {})));
+				return res.status(400).json({ error: 'Uploaded PDF is invalid' });
+			}
+
+			if (mp3File) {
+				const mp3Valid = await isMp3File(mp3File.path);
+				if (!mp3Valid) {
+					await Promise.all(uploadedFilePaths.map((filePath) => fs.unlink(filePath).catch(() => {})));
+					return res.status(400).json({ error: 'Uploaded MP3 is invalid' });
+				}
+			}
+		} catch (validationError) {
+			await Promise.all(uploadedFilePaths.map((filePath) => fs.unlink(filePath).catch(() => {})));
+			return res.status(500).json({ error: 'Failed to validate uploaded files' });
 		}
 
 		let thumbnailPath = null;
@@ -151,6 +202,7 @@ router.post(
 			thumbnailPath = await createPdfThumbnail(pdfFilePath);
 		} catch (err) {
 			console.error('Thumbnail generation failed:', err);
+			await Promise.all(uploadedFilePaths.map((filePath) => fs.unlink(filePath).catch(() => {})));
 			return res
 				.status(500)
 				.json({ error: 'Failed to generate PDF thumbnail' });
@@ -179,6 +231,7 @@ router.post(
 			res.status(201).json(productResult.rows[0]);
 		} catch (err) {
 			console.error(err);
+			await Promise.all(uploadedFilePaths.map((filePath) => fs.unlink(filePath).catch(() => {})));
 			res.status(500).json({
 				error: 'Failed to create music post'
 			});

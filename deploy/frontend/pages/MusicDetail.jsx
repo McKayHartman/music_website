@@ -10,7 +10,9 @@ export default function MusicDetail() {
   const [error, setError] = useState('');
   const [alreadyPurchased, setAlreadyPurchased] = useState(false);
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const [audioError, setAudioError] = useState('');
   const audioRef = useRef(null);
+  const audioUrlRef = useRef('');
 
   function handleAddToCart() {
     if (alreadyPurchased) {
@@ -48,19 +50,39 @@ export default function MusicDetail() {
   }
 
   async function handleListenToMp3() {
-    if (!music?.mp3_path) {
-      alert('No MP3 is available for this piece.');
+    setAudioError('');
+
+    if (!getAuthToken()) {
+      alert('Please log in and purchase this item to listen to the MP3.');
       return;
     }
 
-    if (!audioRef.current) {
-      const audioUrl = `http://localhost:3000/${music.mp3_path}`;
-      const audio = new Audio(audioUrl);
-      audio.addEventListener('ended', () => setIsPlayingPreview(false));
-      audioRef.current = audio;
+    if (!alreadyPurchased) {
+      alert('Please purchase this item before listening to the MP3.');
+      return;
     }
 
     try {
+      if (!audioRef.current) {
+        let playbackUrl = audioUrlRef.current;
+
+        if (!playbackUrl) {
+          const response = await axios.get(
+            `/api/purchases/${music.id}/download?format=mp3`,
+            {
+              headers: getAuthHeaders(),
+              responseType: 'blob'
+            }
+          );
+          playbackUrl = window.URL.createObjectURL(response.data);
+          audioUrlRef.current = playbackUrl;
+        }
+
+        const audio = new Audio(playbackUrl);
+        audio.addEventListener('ended', () => setIsPlayingPreview(false));
+        audioRef.current = audio;
+      }
+
       if (isPlayingPreview) {
         audioRef.current.pause();
         setIsPlayingPreview(false);
@@ -70,8 +92,16 @@ export default function MusicDetail() {
       }
     } catch (playbackError) {
       console.error('Error playing MP3 preview:', playbackError);
-      alert('Unable to play this MP3 right now.');
+      setAudioError('Unable to play this MP3 right now.');
       setIsPlayingPreview(false);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      if (audioUrlRef.current) {
+        window.URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = '';
+      }
     }
   }
 
@@ -80,6 +110,10 @@ export default function MusicDetail() {
       audioRef.current.pause();
       audioRef.current = null;
       setIsPlayingPreview(false);
+    }
+    if (audioUrlRef.current) {
+      window.URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = '';
     }
 
     const fetchMusicDetail = async () => {
@@ -127,6 +161,10 @@ export default function MusicDetail() {
         audioRef.current.pause();
         audioRef.current = null;
       }
+      if (audioUrlRef.current) {
+        window.URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = '';
+      }
     };
   }, []);
 
@@ -149,7 +187,7 @@ export default function MusicDetail() {
     );
   }
 
-  const imageUrl = `http://localhost:3000/${music.thumbnail_path}`;
+  const imageUrl = `/${music.thumbnail_path}`;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -176,15 +214,18 @@ export default function MusicDetail() {
               <div className="text-2xl font-semibold text-text-price mb-6">
                 ${music.price}
               </div>
+              {audioError && (
+                <p className="mb-4 text-sm text-red-600">{audioError}</p>
+              )}
 
               {/* Action buttons */}
               <div className="flex gap-4">
                 <button
                   onClick={handleListenToMp3}
-                  disabled={!music?.mp3_path}
+                  disabled={!alreadyPurchased}
                   className="bg-slate-800 text-white px-6 py-2 rounded hover:bg-slate-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {isPlayingPreview ? 'Pause MP3' : 'Listen to MP3'}
+                  {isPlayingPreview ? 'Pause MP3' : alreadyPurchased ? 'Listen to MP3' : 'Purchase to Listen'}
                 </button>
                 <button
                   onClick={handleAddToCart}
